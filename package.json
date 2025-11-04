@@ -1,0 +1,37 @@
+{
+  "name": "slack-mastra",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev:mastra": "mastra dev",
+    "dev:next": "next dev -p 3000",
+    "dev": "concurrently \"pnpm dev:mastra\" \"pnpm dev:next\"",
+    "build": "next build",
+    "start": "next start"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "packageManager": "pnpm@10.18.3",
+  "dependencies": {
+    "@mastra/core": "^0.23.3",
+    "@mastra/libsql": "^0.16.1",
+    "@mastra/memory": "^0.15.10",
+    "@slack/web-api": "^7.9.2",
+    "next": "^14.2.21",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "zod": "^4.1.12"
+  },
+  "devDependencies": {
+    "@types/node": "^24.10.0",
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "concurrently": "^9.1.2",
+    "mastra": "^0.17.7",
+    "tsx": "^4.20.6",
+    "typescript": "^5.9.3"
+  }
+}
