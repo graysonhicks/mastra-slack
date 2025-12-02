@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { WebClient } from "@slack/web-api";
 import { storage } from "@/lib/storage";
 import { verifySlackRequest } from "@/lib/slack/verify";
-import { sendToAgent } from "@/lib/mastra-client";
+import { streamToSlack } from "@/lib/slack/streaming";
 
 export async function POST(request: NextRequest) {
   try {
@@ -104,30 +104,27 @@ export async function POST(request: NextRequest) {
 
         console.log("📤 Cleaned message to send:", messageText);
 
-        // Process message asynchronously (don't await - respond to Slack immediately)
+        // Process message asynchronously with streaming (don't await - respond to Slack immediately)
         (async () => {
           try {
-            const response = await sendToAgent({
-              message: messageText,
+            const slackClient = new WebClient(installation.botToken);
+            
+            await streamToSlack({
+              slackClient,
+              channel: channelId,
+              threadTs: event.thread_ts || event.ts,
               agentName: app.agentName,
+              message: messageText,
               resource: `slack-${teamId}-${userId}`,
               thread: `slack-${channelId}-${threadTs}`,
+              showWorkflowStatus: true, // Show "Thinking...", "Using tool...", etc.
+              streamPartialText: false, // Only show final response (not partial text)
+              updateInterval: 1000, // Update message every 1 second
             });
 
-            console.log("📥 Agent response:", response.text);
-
-            // Post response back to Slack
-            const slackClient = new WebClient(installation.botToken);
-            await slackClient.chat.postMessage({
-              channel: channelId,
-              text: response.text,
-              thread_ts: event.thread_ts || event.ts, // Reply in thread, or start one if channel mention
-            });
-
-            console.log("✅ Response sent to Slack");
+            console.log("✅ Streaming response completed");
           } catch (error) {
-            console.error("Error processing message:", error);
-            // Optionally send error message to Slack
+            console.error("❌ Error processing streaming message:", error);
           }
         })();
       }
