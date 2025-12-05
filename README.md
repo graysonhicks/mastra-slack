@@ -2,7 +2,7 @@
 
 A pattern for connecting Slack bots to Mastra agents with streaming responses and conversation memory.
 
-This example includes three demo agents (reverse, caps, numbers) — each gets its own Slack app and webhook route.
+This example includes two demo agents (reverse, caps) — each gets its own Slack app and webhook route.
 
 ## How It Works
 
@@ -35,9 +35,6 @@ SLACK_REVERSE_SIGNING_SECRET=...
 
 SLACK_CAPS_BOT_TOKEN=xoxb-...
 SLACK_CAPS_SIGNING_SECRET=...
-
-SLACK_NUMBERS_BOT_TOKEN=xoxb-...
-SLACK_NUMBERS_SIGNING_SECRET=...
 ```
 
 ### 3. Create Slack Apps

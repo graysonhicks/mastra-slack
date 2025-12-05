@@ -9,8 +9,7 @@ import { formatName } from "./utils.js";
  */
 export function handleNestedChunkEvents(
   chunk: ChunkType,
-  state: StreamState,
-  stepQueue: string[]
+  state: StreamState
 ): void {
   // Guard: some chunk types (like "object") don't have payload
   if (!("payload" in chunk)) return;
@@ -27,7 +26,7 @@ export function handleNestedChunkEvents(
       const payload = (innerChunk as { payload?: { text?: string } }).payload;
       if (payload?.text) {
         state.text += payload.text;
-        state.status = "responding";
+        state.chunkType = "text-delta";
       }
     }
     return;
@@ -43,10 +42,8 @@ export function handleNestedChunkEvents(
       innerChunk.type === "workflow-step-start"
     ) {
       const payload = (innerChunk as { payload?: { id?: string } }).payload;
-      state.status = "workflow_step";
-      const stepId = payload?.id ?? "Processing";
-      state.stepName = formatName(stepId);
-      stepQueue.push(state.stepName);
+      state.chunkType = "workflow-step-start";
+      state.stepName = formatName(payload?.id ?? "step");
     }
   }
 }
