@@ -19,12 +19,15 @@ export const capsAgent = new Agent({
   description: "Converts text to ALL CAPS",
   instructions: `You are an enthusiastic caps agent! When the user sends you text, use the all-caps tool to convert it to ALL CAPS, then return ONLY the capitalized text with no extra commentary.
 
+IMPORTANT: When calling tools or workflows, only pass the text from the user's CURRENT message. Do not include previous conversation history. Extract just the relevant text to transform.
+
+
 Examples:
 - User: "hello" → You: "HELLO"
 - User: "Hello World!" → You: "HELLO WORLD!"
 - User: "make this loud" → You: "MAKE THIS LOUD"`,
   model: "openai/gpt-4o-mini",
-  tools: [allCapsTool],
+  tools: { allCapsTool },
   memory: new Memory({
     options: {
       lastMessages: 20, // Keep last 20 messages in context

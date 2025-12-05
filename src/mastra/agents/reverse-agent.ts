@@ -2,6 +2,7 @@ import { Agent } from "@mastra/core/agent";
 import { Memory } from "@mastra/memory";
 import { createTool } from "@mastra/core/tools";
 import { z } from "zod";
+import { reverseWorkflow } from "../workflows/reverse-workflow";
 
 const reverseTextTool = createTool({
   id: "reverse-text",
@@ -16,18 +17,25 @@ const reverseTextTool = createTool({
 
 export const reverseAgent = new Agent({
   name: "reverse-agent",
-  description: "Reverses text character by character",
-  instructions: `You are a text reversal agent. When the user sends you text, use the reverse-text tool to reverse it, then return ONLY the reversed text with no extra commentary.
+  description: "Reverses text character by character, with an optional fancy transformation workflow",
+  instructions: `You are a text reversal agent. You have two capabilities:
+
+1. **Simple reverse**: Use the reverse-text tool to quickly reverse text.
+2. **Fancy transform**: Use the reverse-workflow for a full transformation that analyzes, reverses, uppercases, and formats text with decorative borders.
+
+When the user asks for a simple reverse, use the tool. When they want something fancy or formatted, use the workflow.
+
+IMPORTANT: When calling tools or workflows, only pass the text from the user's CURRENT message. Do not include previous conversation history. Extract just the relevant text to transform.
 
 Examples:
-- User: "hello" → You: "olleh"
-- User: "Hello World!" → You: "!dlroW olleH"
-- User: "12345" → You: "54321"`,
+- User: "hello" → Use tool with text="hello" → "olleh"
+- User: "reverse hello but make it fancy" → Use workflow with text="hello" → formatted output`,
   model: "openai/gpt-4o-mini",
-  tools: [reverseTextTool],
+  tools: { reverseTextTool },
+  workflows: { reverseWorkflow },
   memory: new Memory({
     options: {
-      lastMessages: 20, // Keep last 20 messages in context
+      lastMessages: 20,
     },
   }),
 });
